@@ -1,0 +1,30 @@
+#!/bin/bash
+
+PCI_VGA="0000:01:00.0"  # Optional, can be removed if not strictly needed
+
+# Query GPUs and their display status
+GPU_INFO=$(nvidia-smi --query-gpu=index,gpu_name,display_active --format=csv,noheader)
+
+# Check if any GPU is actively driving a display
+while IFS=',' read -r GPU_INDEX GPU_NAME DISPLAY_STATUS; do
+    GPU_INDEX=$(echo "$GPU_INDEX" | xargs)
+    GPU_NAME=$(echo "$GPU_NAME" | xargs)
+    DISPLAY_STATUS=$(echo "$DISPLAY_STATUS" | xargs)
+
+    if [[ "$GPU_NAME" == *"3060"* && "$DISPLAY_STATUS" == "Enabled" ]]; then
+        echo "$GPU_NAME is actively driving the display."
+        exit 0
+    fi
+done <<< "$GPU_INFO"
+
+# If no 4090 is driving a display, continue
+echo "$GPU_NAME is not actively driving a display. Changing display..."
+
+
+xrandr --output HDMI-0 --mode 1920x1080 --rate 240 --primary
+xwallpaper --zoom ~/wallpapers/3189663-3348093337.jpg
+# sleep 2
+ddcutil setvcp 0x60 0x12 #Switch to HDMI-2
+xrandr --output DP-1-2 --off #Switch DP off
+
+echo "Display changed to HDMI-2, with $GPU_NAME"

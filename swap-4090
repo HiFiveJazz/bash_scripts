@@ -1,0 +1,32 @@
+#!/bin/bash
+
+#!/bin/bash
+
+# Define the PCI ID for the 4090
+PCI_VGA="0000:03:00.0"  # Optional, can be removed if not strictly needed
+
+# Query GPUs and their display status
+GPU_INFO=$(nvidia-smi --query-gpu=index,gpu_name,display_active --format=csv,noheader)
+
+# Check if any GPU is actively driving a display
+while IFS=',' read -r GPU_INDEX GPU_NAME DISPLAY_STATUS; do
+    GPU_INDEX=$(echo "$GPU_INDEX" | xargs)
+    GPU_NAME=$(echo "$GPU_NAME" | xargs)
+    DISPLAY_STATUS=$(echo "$DISPLAY_STATUS" | xargs)
+
+    if [[ "$GPU_NAME" == *"4090"* && "$DISPLAY_STATUS" == "Enabled" ]]; then
+        echo "$GPU_NAME is actively driving the display."
+        exit 0
+    fi
+done <<< "$GPU_INFO"
+
+# If no 4090 is driving a display, continue
+echo "$GPU_NAME is not actively driving a display. Changing display..."
+
+xrandr --output DP-1-2 --mode 1920x1080 --rate 360 --primary #Output to DP
+xwallpaper --zoom ~/wallpapers/3189663-3348093337.jpg #Set background
+sleep 2
+ddcutil setvcp 0x60 0x0f #Switch to DP display
+xrandr --output HDMI-0 --off #Turn off HDMI-2
+
+echo "Display changed to DP-2, with $GPU_NAME"
