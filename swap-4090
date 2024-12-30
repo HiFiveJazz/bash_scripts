@@ -3,7 +3,7 @@
 #!/bin/bash
 
 # Define the PCI ID for the 4090
-PCI_VGA="0000:03:00.0"  # Optional, can be removed if not strictly needed
+PCI_VGA="0000:06:00.0"  # Optional, can be removed if not strictly needed
 
 # Query GPUs and their display status
 GPU_INFO=$(nvidia-smi --query-gpu=index,gpu_name,display_active --format=csv,noheader)

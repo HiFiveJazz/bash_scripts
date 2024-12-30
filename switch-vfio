@@ -7,8 +7,8 @@ if [[ $EUID -ne 0 ]]; then
 fi
 
 # Variables
-PCI_VGA="0000:03:00.0"
-PCI_AUDIO="0000:03:00.1"
+PCI_VGA="0000:06:00.0"
+PCI_AUDIO="0000:06:00.1"
 BOOT_ENTRY="/boot/loader/entries/2024-12-26_04-35-35_linux.conf"
 VFIO_IDS="vfio-pci.ids=10de:2684,10de:22ba"
 VFIO_MODULES="vfio vfio-pci vfio_iommu_type1"
